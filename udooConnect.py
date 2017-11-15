@@ -265,9 +265,12 @@ if __name__ == "__main__":
                 #writesensordata()
                 #time.sleep(0.2)
 		if variabs['firstTime'] == True:
-			print "first Time"
+			#llama funciones de primera vez (inyectar macro y micro)
+			#arduino.write('5')
+			print "First Time"
 			variabs['firstTime'] = False
 			pickle.dump( variabs, open( "save.p", "wb" ) )
+			time.sleep(1)
 
 		checkPh()
 		waterCycle()
