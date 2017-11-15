@@ -13,11 +13,7 @@ DEBUG = False
 lightsOn = False
 lightsOff = False
 motorOn = False
-startTime = time.time()
-refTime = startTime
-refTimeWat = startTime - 40
-refTimePh = startTime - 28800
-refTimeLight = startTime + 40
+
 #endTestVariabs 
 #Create serial device for reading serial
 arduino = serial.Serial('/dev/ttymxc3',115200,timeout=0)
@@ -27,12 +23,41 @@ serial_buffer = ""
 line = ""
 arduino_data = []
 temp_str = '0'
-temp = 0
 attempts = 0
 mark1 = 0
 mark2 = 0
-variabs = {"firstTime": True}
+startTime = 0
+refTime = 0
+refTimeWat = 0
+refTimePh = 0
+refTimeLight = 0
+tf = [True, False]
+variabs = {"firstTime": 0, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0}
 success = False
+
+#recover variabs in case of shutdown
+try:
+	variabs = pickle.load( open( "save.p", "rb" ) )
+	print "made it"
+	print variabs['firstTime'] 
+except:
+	print "no pickle file"
+
+if variabs['firstTime'] == 1:
+	refTime = variabs['firstTime']
+	refTimeWat = variabs['firstTime']
+	refTimePh = variabs['firstTime']
+	refTimeLight = variabs['firstTime']
+	print "backed up startTimes"
+else:
+	print "variabs"
+	print variabs['firstTime']
+	startTime = time.time()
+	refTime = startTime
+	refTimeWat = startTime - 40
+	refTimePh = startTime - 28800
+	refTimeLight = startTime + 40
+
 while success == False:
 
 	try:
@@ -63,14 +88,6 @@ while success == False:
 	    #print "Couldn't connect to the API, check your Internet connection"
 	    #exit(0)
 
-#recover variabs in case of shutdown
-try:
-	variabs = pickle.load( open( "save.p", "rb" ) )
-	print variabs['firstTime']
-except:
-	print "no pickle file"
-
-
 #init for arduino so Arduino knows it can send data.
 #arduino.write("I\n")
 
@@ -96,7 +113,7 @@ def ReadArduino(arduino_out):
             line = serial_buffer
             serial_buffer = "" # empty Serial buffer
         serial_data = arduino.read()
-        # if there is a Line string then fin	ish reading the Line
+        # if there is a Line string then finish reading the Line
         if line:
                 # strip string for unwanted characters
                 line = line.replace("\r\n", "")
@@ -109,27 +126,16 @@ def ReadArduino(arduino_out):
                 return arduino_out
     
 
-#Report Udoo Neo Arduino Sensor data to Thingspeak Channel
-def writesensordata():
-    global temp, errorLed, baseLevel, api, acidLevel, temp_str, lights
+#check level of tanks
+def checkLevels():
+    global baseLevel, api, acidLevel, temp_str
     global macroLevel, microLevel, waterLevel, ledHrs, sunHrs, ph
     
     while True:
         #Escribir a arduino para despertarlo y recibir datos
-        #WriteArduino()
-	lightHours = api.get_variable("59e81448c03f9716b74ccf34")
-    	print "light Hours:"
-	print str(int(lightHours.get_values(1)[0]['value']))
-	 
+
         arduino.write('0')
-	time.sleep(0.1)
-        #Led Error
-	temp_str = ReadArduino(temp_str)
-	if temp_str is not None:
-            temp_str = int(temp_str)
-	    print "Error: "
-	    print temp_str
-            errorLed.save_value({'value':temp_str})	        	        
+	time.sleep(0.1)	        	        
 	#nivel Base
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
@@ -257,26 +263,28 @@ def lightCycle():
 		mark1 = time.time()
 		print ("lights off for: ", mark1 - mark2)
 		lightsOff = False
-	
+def backupTimes():
+	global refTime, refTimeWat, refTimePh, refTimeLight, variabs
+	variabs['refTime'] = refTime
+ 	variabs['refTimeWat'] = refTimeWat
+	variabs['refTimePh'] = refTimePh
+	variabs['refTimeLight'] = refTimeLight
+	pickle.dump( variabs, open( "save.p", "wb" ) 
+)
 #sleep for desired amount of time
 if __name__ == "__main__":
         while True:
-                #writesensordata()
-                #time.sleep(0.2)
-		if variabs['firstTime'] == True:
-			#revisa todos los niveles
-			arduino.write('7')
-			time.sleep(0.2)
-			temp_str = ReadArduino(temp_str)
-			        if temp_str is not None:
-					
+
+		if tf[variabs['firstTime']] == True:
 			#llama funciones de primera vez (inyectar macro y micro)
 			#arduino.write('5')
 			print "First Time"
-			variabs['firstTime'] = False
+			variabs['firstTime'] = 1
 			pickle.dump( variabs, open( "save.p", "wb" ) )
 			time.sleep(1)
+		checkLevels()
 		checkPh()
 		waterCycle()
 		lightCycle()
+		backupTimes()
                 time.sleep(sleep)
