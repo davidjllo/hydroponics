@@ -1,7 +1,6 @@
 #include <Wire.h>
 #include "Arduino.h"
 #include "SI114X.h"
-
 #define led 24
 #define button 23
 #define pot A0
@@ -38,28 +37,27 @@ void loop() {
       switch(option){
         case 0:
         {
-          //pedir valor de sensores
-          int buttonValue = digitalRead(button);
-          int pot = analogRead(pot);
-          pot = map(pot, 0, 1023, 0, 100);
-          //led error
-          Serial.println(buttonValue);
-          delay(20);
+          int baseLevel = 70;
+          int acidLevel = 70;
+          int macroLevel = 70;
+          int microLevel = 70;
+          int waterLevel = 70;
+          
           //nivel base
-          Serial.println(pot);
+          Serial.println(baseLevel);
           delay(20);
           //nivel acido
-          Serial.println(pot);
+          Serial.println(acidLevel);
           delay(20);
           //nivel macro
-          Serial.println(pot);
+          Serial.println(macroLevel);
           delay(20);
           //nivel micro
-          Serial.println(pot);
+          Serial.println(microLevel);
           delay(20);
           //nivel agua
-          Serial.println(pot);
-          delay(1000);
+          Serial.println(waterLevel);
+          delay(1500);
           Serial.flush();
           break;
         }
@@ -101,66 +99,8 @@ void loop() {
           //encender macro y micro para renivelar
           break;
         }
-        case 7:
-        {
-          //revisar nivel de micro nutrientes
-          boolean nivel = true;
-          if(nivel == true){
-            Serial.println(1);
-          }else{
-            Serial.println(0);
-          }
-          break;
-        }
-        case 8:
-        {
-          //revisar nivel de macro nutrientes
-           boolean nivel = true;
-          if(nivel == true){
-            Serial.println(1);
-          }else{
-            Serial.println(0);
-          }
-          break;
-        }
-        case 9:
-        {
-          //revisar nivel de ph base
-          boolean nivel = true;
-          if(nivel == true){
-            Serial.println(1);
-          }else{
-            Serial.println(0);
-          }
-          break;
-        }
-        case 10:
-        {
-          //revisar nivel de ph acido
-          boolean nivel = true;
-          if(nivel == true){
-            Serial.println(1);
-          }else{
-            Serial.println(0);
-          }
-          break;
-        }
-        case 11:
-        {
-          //revisar nivel de agua
-          boolean nivel = true;
-          if(nivel == true){
-            Serial.println(1);
-          }else{
-            Serial.println(0);
-          }
-          break;
-        }
       }
     }
-    //Espera 1 segundo y lo suma a el contador 
-    
-    if(digitalRead(ilumPin) == HIGH) ledSum += 1;
   
 }
 void checkLight(){
@@ -172,9 +112,7 @@ void checkLight(){
     digitalWrite(testLed, LOW);
   }
 }
-void reset(){
-  ledSum = 0;
-}
+
 void blinks(){
     if(digitalRead(led)==LOW){
       digitalWrite(led, HIGH);
