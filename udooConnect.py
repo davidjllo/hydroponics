@@ -32,8 +32,8 @@ attempts = 0
 mark1 = 0
 mark2 = 0
 variabs = {"firstTime": True}
-
-while attempts < 15:
+success = False
+while success == False:
 
 	try:
 	    api = ApiClient("A1E-d5c762feef9d1508abb365575350c9e19c72")
@@ -53,16 +53,15 @@ while attempts < 15:
 	    sunHrs = api.get_variable("59e81451c03f97177f01b206")
 	    pH = api.get_variable("59e813ecc03f9716b74ccf2b")
 	    timeTest1 = time.time()
-	    attempts = 15
 	    print "time spent: "
 	    print timeTest1 - timeTest
-	    
+	    success = True
 	
 	except:
-	    attempts += 1
 	    time.sleep(0.5)
-	    print "Couldn't connect to the API, check your Internet connection"
-	    exit(0)
+	    pass
+	    #print "Couldn't connect to the API, check your Internet connection"
+	    #exit(0)
 
 #recover variabs in case of shutdown
 try:
@@ -97,7 +96,7 @@ def ReadArduino(arduino_out):
             line = serial_buffer
             serial_buffer = "" # empty Serial buffer
         serial_data = arduino.read()
-        # if there is a Line string then finish reading the Line
+        # if there is a Line string then fin	ish reading the Line
         if line:
                 # strip string for unwanted characters
                 line = line.replace("\r\n", "")
@@ -265,13 +264,18 @@ if __name__ == "__main__":
                 #writesensordata()
                 #time.sleep(0.2)
 		if variabs['firstTime'] == True:
+			#revisa todos los niveles
+			arduino.write('7')
+			time.sleep(0.2)
+			temp_str = ReadArduino(temp_str)
+			        if temp_str is not None:
+					
 			#llama funciones de primera vez (inyectar macro y micro)
 			#arduino.write('5')
 			print "First Time"
 			variabs['firstTime'] = False
 			pickle.dump( variabs, open( "save.p", "wb" ) )
 			time.sleep(1)
-
 		checkPh()
 		waterCycle()
 		lightCycle()

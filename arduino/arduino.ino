@@ -104,31 +104,56 @@ void loop() {
         case 7:
         {
           //revisar nivel de micro nutrientes
-          
+          boolean nivel = true;
+          if(nivel == true){
+            Serial.println(1);
+          }else{
+            Serial.println(0);
+          }
           break;
         }
         case 8:
         {
           //revisar nivel de macro nutrientes
-          
+           boolean nivel = true;
+          if(nivel == true){
+            Serial.println(1);
+          }else{
+            Serial.println(0);
+          }
           break;
         }
         case 9:
         {
           //revisar nivel de ph base
-
+          boolean nivel = true;
+          if(nivel == true){
+            Serial.println(1);
+          }else{
+            Serial.println(0);
+          }
           break;
         }
         case 10:
         {
           //revisar nivel de ph acido
-
+          boolean nivel = true;
+          if(nivel == true){
+            Serial.println(1);
+          }else{
+            Serial.println(0);
+          }
           break;
         }
         case 11:
         {
           //revisar nivel de agua
-
+          boolean nivel = true;
+          if(nivel == true){
+            Serial.println(1);
+          }else{
+            Serial.println(0);
+          }
           break;
         }
       }
