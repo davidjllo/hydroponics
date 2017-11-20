@@ -1,13 +1,12 @@
 #include <Wire.h>
 #include "Arduino.h"
 #include "SI114X.h"
-#define led 24
-#define button 23
-#define pot A0
 #define ilumPin 22
 #define pinMotor 25
-#define testMotor 28
-#define testLed 29
+#define dosifBase 29
+#define dosifAcido 30
+#define dosifMacro 33
+#define dosifMicro 34
 boolean ilum = false;
 int ledSum = 0;
 //SI114X SI1145 = SI114X();
@@ -17,9 +16,10 @@ void setup() {
   pinMode(led, OUTPUT);
   pinMode(ilumPin, OUTPUT);
   pinMode(pinMotor, OUTPUT);
-  pinMode(testLed, OUTPUT);
-  pinMode(testMotor, OUTPUT);
-  pinMode(button, INPUT);
+  pinMode(dosifBase, OUTPUT);
+  pinMode(dosifAcido, OUTPUT);
+  pinMode(dosifMacro, OUTPUT);
+  pinMode(dosifMicro, OUTPUT);
 //  while (!SI1145.Begin()){
 //    Serial.println("Not ready");
 //    delay(1000);
@@ -90,7 +90,12 @@ void loop() {
         case 5:
         {
           //encender macro y micro por primera vez
-
+          digitalWrite(dosifMacro, HIGH);
+          digitalWrite(dosifMicro, HIGH);
+          delay(22000);
+          digitalWrite(dosifMicro, LOW);
+          delay(33000);
+          digitalWrite(dosifMacro, LOW);
           break;
         }
         case 6:
@@ -109,6 +114,11 @@ void loop() {
           delay(500);
           digitalWrite(ilumPin, LOW);
           delay(500);
+          break;
+        }
+        case 8:
+        {
+          //consultar ph y aplicar correción
           break;
         }
       }

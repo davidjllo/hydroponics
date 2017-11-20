@@ -31,8 +31,9 @@ refTime = 0
 refTimeWat = 0
 refTimePh = 0
 refTimeLight = 0
-tf = [True, False]
-variabs = {"firstTime": 0, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0}
+tf = [False, True]
+variabs = {"firstTime": 1, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0, 
+"lightsOn": 0, "lightsOff": 0, "motorOn": 0}
 success = False
 
 
@@ -42,11 +43,14 @@ try:
 except:
 	print "no pickle file"
 
-if variabs['firstTime'] == 1:
-	refTime = variabs['firstTime']
-	refTimeWat = variabs['firstTime']
-	refTimePh = variabs['firstTime']
-	refTimeLight = variabs['firstTime']
+if variabs['firstTime'] == 0:
+	refTime = variabs['refTime']
+	refTimeWat = variabs['refTimeWat']
+	refTimePh = variabs['refTimePh']
+	refTimeLight = variabs['refTimeLight']
+	lightsOn = tf[variabs['lightsOn']]
+	lightsOff = tf[variabs['lightsOff']]
+	motorOn = tf[variabs['motorOn']]
 	print "backed up variables"
 else:
 	print "variabs"
@@ -135,7 +139,7 @@ def checkLevels():
     
     while True:
         #Escribir a arduino para despertarlo y recibir datos
-
+	
         arduino.write('0')
 	time.sleep(0.1)	        	        
 	#nivel Base
@@ -228,6 +232,7 @@ def lightTest():
 			print "lights Off"
 			refTime = time.time()
 			lightsOn = False
+			
 			arduino.write('2')
 			time.sleep(0.1)
         elif time.time() - refTime > 20 and lightsOn == False :
@@ -291,7 +296,7 @@ def lightCycle():
 		arduino.write('1')
 		print "lights turned on"
 		refTimeLight = time.time()
-		
+		variabs['lightsOn'] = 1
 		lightsOn = True 
 	if time.time() - refTimeLight > lightHoursInSecs and lightsOn == True:
 		print "lights turned off"
@@ -299,33 +304,44 @@ def lightCycle():
 		arduino.write('2')
 		refTimeLight = time.time()
 		mark2 = time.time()
-		
 		lightsOn = False
+		variabs['lightsOn'] = 0
 		lightsOff = True
+		variabs['lightsOff'] = 1
 	if time.time() - refTimeLight > darkHoursInSecs and lightsOn == False and lightsOff == True:
 		#permite que el primer if se active luego de completar tiempo de descanso
 		mark1 = time.time()
 		print ("lights off for: ", mark1 - mark2)
 		lightsOff = False
+		variabs['lightsOff'] = 0
+
 def backupTimes():
-	global refTime, refTimeWat, refTimePh, refTimeLight, variabs
+	global refTime, refTimeWat, refTimePh, refTimeLight, variabs, lightsOn, lightsOff, motorOn
 	variabs['refTime'] = refTime
  	variabs['refTimeWat'] = refTimeWat
 	variabs['refTimePh'] = refTimePh
 	variabs['refTimeLight'] = refTimeLight
-	pickle.dump( variabs, open( "save.p", "wb" ) 
-)
+
+	variabs['lightsOn'] = int(lightsOn == True)
+	variabs['lightsOff'] = int(lightsOff == True)
+	variabs['motorOn'] = int(motorOn == True)
+	pickle.dump(variabs, open( "save.p", "wb" ))
+
+def firstTime():
+	global variabs
+	#llama funciones de primera vez (inyectar macro y micro)
+	arduino.write('5')
+	print "Aplicando macro y micro nutrientes por primera vez"
+	variabs['firstTime'] = 0
+	pickle.dump( variabs, open( "save.p", "wb" ) )
+	time.sleep(55)
+
 #sleep for desired amount of time
 if __name__ == "__main__":
         while True:
 
 		if tf[variabs['firstTime']] == True:
-			#llama funciones de primera vez (inyectar macro y micro)
-			#arduino.write('5')
-			print "First Time"
-			variabs['firstTime'] = 1
-			pickle.dump( variabs, open( "save.p", "wb" ) )
-			time.sleep(1)
+			firstTime()
 		checkLevels()
 		checkPh()
 		waterCycle()
