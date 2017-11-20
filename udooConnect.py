@@ -323,6 +323,8 @@ def backupTimes():
 	variabs['refTimeLight'] = refTimeLight
 
 	variabs['lightsOn'] = int(lightsOn == True)
+	print "lights : "
+	print int(lightsOn == True)
 	variabs['lightsOff'] = int(lightsOff == True)
 	variabs['motorOn'] = int(motorOn == True)
 	pickle.dump(variabs, open( "save.p", "wb" ))
