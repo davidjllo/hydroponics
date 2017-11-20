@@ -35,11 +35,10 @@ tf = [True, False]
 variabs = {"firstTime": 0, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0}
 success = False
 
+
 #recover variabs in case of shutdown
 try:
 	variabs = pickle.load( open( "save.p", "rb" ) )
-	print "made it"
-	print variabs['firstTime'] 
 except:
 	print "no pickle file"
 
@@ -48,7 +47,7 @@ if variabs['firstTime'] == 1:
 	refTimeWat = variabs['firstTime']
 	refTimePh = variabs['firstTime']
 	refTimeLight = variabs['firstTime']
-	print "backed up startTimes"
+	print "backed up variables"
 else:
 	print "variabs"
 	print variabs['firstTime']
@@ -80,6 +79,9 @@ while success == False:
 	    timeTest1 = time.time()
 	    print "time spent: "
 	    print timeTest1 - timeTest
+	    #show initiated
+	    arduino.write('7')
+	    time.sleep(2)
 	    success = True
 	
 	except:
@@ -141,36 +143,78 @@ def checkLevels():
         if temp_str is not None:
             temp_str = int(temp_str)
 	    print "Base level:"
-	    print temp_str
-	    baseLevel.save_value({'value':temp_str})
+	    print temp_str	    
+	    attempts = 0
+            while attempts < 5:
+		try:
+		    baseLevel.save_value({'value':temp_str})
+		    attempts = 5
+		except:
+		    print "cant get var"
+		    time.sleep(0.5)
+		    attempts += 1
 	#nivel Acido
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
 	    print "Acid level:"
 	    print temp_str
-	    acidLevel.save_value({'value':temp_str})	        	        
+	    attempts = 0
+            while attempts < 5:
+		try:
+		    acidLevel.save_value({'value':temp_str})
+		    attempts = 5
+		except:
+		    print "cant get var"
+		    time.sleep(0.5)
+		    attempts += 1     	        
 	#nivel Macro
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
 	    print "Macro Nutrients level:"
 	    print temp_str
-	    macroLevel.save_value({'value':temp_str})	        	        
+	    attempts = 0
+            while attempts < 5:
+		try:
+	    	    macroLevel.save_value({'value':temp_str})
+		    attempts = 5
+		except:
+		    print "cant get var"
+		    time.sleep(0.5)
+		    attempts += 1     	        
+	        	        
 	#nivel Micro
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
 	    print "Micro Nutrients level:"
 	    print temp_str
-	    microLevel.save_value({'value':temp_str})	        	        
+	    attempts = 0
+            while attempts < 5:
+		try:
+	    	    microLevel.save_value({'value':temp_str})
+		    attempts = 5
+		except:
+		    print "cant get var"
+		    time.sleep(0.5)
+		    attempts += 1     	        
+	        	        
 	#nivel Agua
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
 	    print "Water level:"
 	    print temp_str
-	    waterLevel.save_value({'value':temp_str})	        	        	        	        
+	    attempts = 0
+            while attempts < 5:
+		try:
+	    	    waterLevel.save_value({'value':temp_str})
+		    attempts = 5
+		except:
+		    print "cant get var"
+		    time.sleep(0.5)
+		    attempts += 1     	        	        	        	        
 	break
      
 def lightTest():

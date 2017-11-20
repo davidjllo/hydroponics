@@ -4,8 +4,8 @@
 #define led 24
 #define button 23
 #define pot A0
-#define ilumPin 25
-#define pinMotor 27
+#define ilumPin 22
+#define pinMotor 25
 #define testMotor 28
 #define testLed 29
 boolean ilum = false;
@@ -57,8 +57,8 @@ void loop() {
           delay(20);
           //nivel agua
           Serial.println(waterLevel);
-          delay(1500);
-          Serial.flush();
+          //delay(2500);
+          //Serial.flush();
           break;
         }
         case 1:
@@ -77,8 +77,7 @@ void loop() {
         case 3:
         {
         //Encender Bomba de agua
-          digitalWrite(testMotor, HIGH);
-          //digitalWrite(pinMotor, HIGH);
+          digitalWrite(pinMotor, HIGH);
           break;
         }
         case 4:
@@ -99,6 +98,19 @@ void loop() {
           //encender macro y micro para renivelar
           break;
         }
+        case 7:
+        {
+          //indicar inicio
+          digitalWrite(ilumPin, HIGH);
+          delay(500);
+          digitalWrite(ilumPin, LOW);
+          delay(500);
+          digitalWrite(ilumPin, HIGH);
+          delay(500);
+          digitalWrite(ilumPin, LOW);
+          delay(500);
+          break;
+        }
       }
     }
   
@@ -107,9 +119,9 @@ void checkLight(){
   //si el sensor tiene la minima cantidad de luz, 
   //SI1145.ReadVisible() < 280 && 
   if(ilum == true){
-    digitalWrite(testLed, HIGH);
+    digitalWrite(ilumPin, HIGH);
   }else{
-    digitalWrite(testLed, LOW);
+    digitalWrite(ilumPin, LOW);
   }
 }
 
