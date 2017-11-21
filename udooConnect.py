@@ -31,6 +31,7 @@ refTime = 0
 refTimeWat = 0
 refTimePh = 0
 refTimeLight = 0
+phCounter = 1
 tf = [False, True]
 variabs = {"firstTime": 1, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0, 
 "lightsOn": 0, "lightsOff": 0, "motorOn": 0}
@@ -50,6 +51,7 @@ if variabs['firstTime'] == 0:
 	refTimeLight = variabs['refTimeLight']
 	lightsOn = tf[variabs['lightsOn']]
 	lightsOff = tf[variabs['lightsOff']]
+	phCounter = tf[variabs['phCounter']]
 	motorOn = tf[variabs['motorOn']]
 	print "backed up variables"
 else:
@@ -261,13 +263,21 @@ def waterCycle():
 			arduino.write('3')
 			time.sleep(0.1)
 def checkPh():
-	global api, refTimePh, startTime
+	global api, refTimePh, startTime, phCounter
 	
 	if time.time() - refTimePh > 28800:
 		print "Checking pH"
 		#Tell arduino to check ph
 		#arduino.write('5')
 		refTimePh = time.time()
+	//durante la primera ejecución
+	if time.time() - refTimePh > 600 * phCounter and phCounter < 5:
+		print "Checking pH"
+		#Tell arduino to check ph
+		#arduino.write('5')
+		refTimePh = time.time()
+		phCounter += 1
+
 
 def lightCycle():
 	global api, startTime, refTimeLight, lightHours, lightsOn, lightsOff, mark1, mark2
@@ -316,7 +326,7 @@ def lightCycle():
 		variabs['lightsOff'] = 0
 
 def backupTimes():
-	global refTime, refTimeWat, refTimePh, refTimeLight, variabs, lightsOn, lightsOff, motorOn
+	global refTime, refTimeWat, refTimePh, refTimeLight, variabs, lightsOn, lightsOff, motorOn, phCounter
 	variabs['refTime'] = refTime
  	variabs['refTimeWat'] = refTimeWat
 	variabs['refTimePh'] = refTimePh
@@ -327,6 +337,7 @@ def backupTimes():
 	print int(lightsOn == True)
 	variabs['lightsOff'] = int(lightsOff == True)
 	variabs['motorOn'] = int(motorOn == True)
+	variabs['phCounter'] = phCounter
 	pickle.dump(variabs, open( "save.p", "wb" ))
 
 def firstTime():

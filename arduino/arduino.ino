@@ -1,13 +1,22 @@
 #include <Wire.h>
 #include "Arduino.h"
 #include "SI114X.h"
+//Digital
 #define ilumPin 22
 #define pinMotor 25
 #define dosifBase 29
 #define dosifAcido 30
 #define dosifMacro 33
 #define dosifMicro 34
+#define led 53
+//Analog
 #define sensorPh 0
+#define baseSensor 1
+#define acidoSensor 2
+#define macroSensor 3
+#define microSensor 4
+#define aguaSensor 5
+
 boolean ilum = false;
 int ledSum = 0;
 unsigned long int avgValue;  //Store the average value of the sensor feedback
@@ -41,25 +50,30 @@ void loop() {
       switch(option){
         case 0:
         {
-          int baseLevel = 70;
-          int acidLevel = 70;
-          int macroLevel = 70;
-          int microLevel = 70;
-          int waterLevel = 70;
+          int baseLevel = 85;
+          int acidLevel = 85;
+          int macroLevel = 85;
+          int microLevel = 85;
+          int waterLevel = 85;
           
           //nivel base
+          baseLevel = map(analogRead(baseSensor),599,612,70,100);
           Serial.println(baseLevel);
           delay(20);
           //nivel acido
+          acidLevel = map(analogRead(acidoSensor),499,612,70,100);
           Serial.println(acidLevel);
           delay(20);
           //nivel macro
+          macroLevel = map(analogRead(macroSensor),499,612,70,100);
           Serial.println(macroLevel);
           delay(20);
           //nivel micro
+          microLevel = map(analogRead(microSensor),499,612,70,100);
           Serial.println(microLevel);
           delay(20);
           //nivel agua
+          waterLevel = map(analogRead(microSensor),499,612,70,100);
           Serial.println(waterLevel);
           //delay(2500);
           //Serial.flush();
@@ -85,8 +99,7 @@ void loop() {
         case 4:
         {
           //apagar bomba de agua
-          digitalWrite(testMotor, LOW);
-          //digitalWrite(pinMotor, LOW);
+          digitalWrite(pinMotor, LOW);
           break;
         }
         case 5:
@@ -127,6 +140,7 @@ void loop() {
         case 8:
         {
           //consultar ph y aplicar correción
+          controlPh();
           break;
         }
       }
@@ -136,7 +150,7 @@ void loop() {
 void controlPh(){
     for(int i=0;i<10;i++)       //Get 10 sample value from the sensor for smooth the value
   { 
-    buf[i]=analogRead(SensorPin);
+    buf[i]=analogRead(sensorPh);
     delay(10);
   }
   for(int i=0;i<9;i++)        //sort the analog from small to large
@@ -162,18 +176,18 @@ void controlPh(){
   if(phValue>6.5)
   {
     digitalWrite(dosifAcido, HIGH);
-    delay(500)
+    delay(500);
     digitalWrite(dosifAcido, LOW);
-    delay(500)
+    delay(500);
   }
   else
   {
     if(phValue<5.5)
   {
     digitalWrite(dosifBase, HIGH);
-    delay(500)
+    delay(500);
     digitalWrite(dosifBase, LOW);
-    delay(500)
+    delay(500);
   
   }
   }
