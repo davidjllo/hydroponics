@@ -280,8 +280,8 @@ def checkPh():
 
 
 def lightCycle():
-	global api, startTime, refTimeLight, lightHours, lightsOn, 
-	ightsOff, mark1, mark2, temp_str, ledHrs, sunHrs
+	global api, startTime, refTimeLight, lightHours, lightsOn 
+	global lightsOff, mark1, mark2, temp_str, ledHrs, sunHrs
 	hours = 0
 	attempts = 0
 	while attempts < 5:
