@@ -166,6 +166,12 @@ void loop() {
           Serial.println(result);
           flow = false;
         }
+        case 11:
+        {
+          //leer ph
+          Serial.println(analogRead(sensorPh));
+          break;
+        }
       }
     }
   

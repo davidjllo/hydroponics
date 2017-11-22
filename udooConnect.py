@@ -35,7 +35,7 @@ refTimeLight = 0
 phCounter = 1
 tf = [False, True]
 variabs = {"firstTime": 1, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0, 
-"lightsOn": 0, "lightsOff": 0, "motorOn": 0, "phCounter":0}
+"lightsOn": 0, "lightsOff": 0, "motorOn": 0, "phCounter": 0}
 success = False
 
 
@@ -372,12 +372,22 @@ def firstTime():
 	pickle.dump( variabs, open( "save.p", "wb" ) )
 	time.sleep(55)
 
-def addData():
-	#add shit to ubidots
-	global ledHrs, sunHrs
-	for x in range (0,5):
-		ledHrs.save_value({'value':9+x})
-        sunHrs.save_value({'value':9-x})
+def readPh():
+	time.sleep(0.2)
+	arduino.write('11')
+	ph = 0
+	temp_str = ReadArduino(temp_str)
+        if temp_str is not None:
+            ph = int(temp_str)
+	attempts = 0
+	while attempts < 5:
+	    try:
+		pH.save_value({'value':ph})
+		attempts = 5
+	    except:
+		print "cant get var"
+		time.sleep(0.5)
+		attempts += 1
 #sleep for desired amount of time
 if __name__ == "__main__":
         while True:
@@ -389,6 +399,7 @@ if __name__ == "__main__":
 		checkPh()
 		waterCycle()
 		lightCycle()
+		readPh()
 		addData()
 		now = datetime.datetime.now()
 		if now.hour == 6 and now.minute > 50:
