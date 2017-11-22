@@ -280,7 +280,8 @@ def checkPh():
 
 
 def lightCycle():
-	global api, startTime, refTimeLight, lightHours, lightsOn, lightsOff, mark1, mark2, temp_str
+	global api, startTime, refTimeLight, lightHours, lightsOn, 
+	ightsOff, mark1, mark2, temp_str, ledHrs, sunHrs
 	hours = 0
 	attempts = 0
 	while attempts < 5:
@@ -360,6 +361,7 @@ def firstTime():
 
 def addData():
 	#add shit to ubidots
+	global ledHrs, sunHrs
 	for x in range (0,5):
 		ledHrs.save_value({'value':9+x})
         sunHrs.save_value({'value':9-x})
