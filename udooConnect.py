@@ -249,14 +249,15 @@ def waterCycle():
 	#test LED
 	
 	#print "Motor time Difference: "
-	#print time.time() - refTimeWat
-        if time.time() - refTimeWat > 20 and motorOn == True :
+		#si lleva 15 min prendido lo apaga
+        if time.time() - refTimeWat > 900 and motorOn == True :
 			print "motor Off"
 			refTimeWat = time.time()
 			motorOn = False
 			arduino.write('4')
 			time.sleep(0.1)
-        elif time.time() - refTimeWat > 40 and motorOn == False :
+		#si lleva 45 min apagado, prende bomba de agua
+        elif time.time() - refTimeWat > 2700 and motorOn == False :
 			print "motor On"
 			refTimeWat = time.time()
 			motorOn = True
@@ -270,7 +271,7 @@ def checkPh():
 		#Tell arduino to check ph
 		#arduino.write('5')
 		refTimePh = time.time()
-	#durante la primera ejecucion
+	#durante la primera ejecucion, calibra ph 5 veces cada 10 minutos
 	if time.time() - refTimePh > 600 * phCounter and phCounter < 5:
 		print "Checking pH"
 		#Tell arduino to check ph
@@ -296,8 +297,8 @@ def lightCycle():
 	print hours
 	lightHoursInSecs =  hours * 3600
 	darkHoursInSecs = (24*3600)-lightHoursInSecs
-	lightHoursInSecs = 40
-	darkHoursInSecs = 20
+	#lightHoursInSecs = 40
+	#darkHoursInSecs = 20
 
 	if lightsOn == False and lightsOff == False:
 		refTimeLight = time.time()
@@ -368,7 +369,8 @@ def addData():
 #sleep for desired amount of time
 if __name__ == "__main__":
         while True:
-
+        print "time: "
+        print time.hour();
 		if tf[variabs['firstTime']] == True:
 			firstTime()
 		checkLevels()
