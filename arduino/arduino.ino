@@ -61,23 +61,23 @@ void loop() {
           int waterLevel = 85;
           
           //nivel base
-          baseLevel = map(analogRead(baseSensor),599,612,70,100);
+          baseLevel = map(analogRead(baseSensor),599,612,0,100);
           Serial.println(baseLevel);
           delay(20);
           //nivel acido
-          acidLevel = map(analogRead(acidoSensor),499,612,70,100);
+          acidLevel = map(analogRead(acidoSensor),499,612,0,100);
           Serial.println(acidLevel);
           delay(20);
           //nivel macro
-          macroLevel = map(analogRead(macroSensor),499,612,70,100);
+          macroLevel = map(analogRead(macroSensor),499,612,0,100);
           Serial.println(macroLevel);
           delay(20);
           //nivel micro
-          microLevel = map(analogRead(microSensor),499,612,70,100);
+          microLevel = map(analogRead(microSensor),499,612,0,100);
           Serial.println(microLevel);
           delay(20);
           //nivel agua
-          waterLevel = map(analogRead(microSensor),499,612,70,100);
+          waterLevel = map(analogRead(microSensor),499,612,0,100);
           Serial.println(waterLevel);
           //delay(2500);
           //Serial.flush();
@@ -157,7 +157,13 @@ void loop() {
         case 10:
         {
           //check flow
-          Serial.println(flow);
+          int result = 0;
+          if (flow == true){
+            result = 1;
+          }else{
+            result = 0;
+          }
+          Serial.println(result);
           flow = false;
         }
       }

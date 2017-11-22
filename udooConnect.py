@@ -83,6 +83,7 @@ while success == False:
 	    ledHrs = api.get_variable("59e8145ac03f97177f01b207")
 	    sunHrs = api.get_variable("59e81451c03f97177f01b206")
 	    pH = api.get_variable("59e813ecc03f9716b74ccf2b")
+	    atasco = api.get_variable("5a15b5f7c03f970567214718")
 	    timeTest1 = time.time()
 	    print "time spent: "
 	    print timeTest1 - timeTest
@@ -246,7 +247,7 @@ def lightTest():
 			time.sleep(0.1)
 
 def waterCycle():
-	global api, startTime, refTimeWat, motorOn
+	global api, startTime, refTimeWat, motorOn, temp_str
 	#test LED
 	
 	#print "Motor time Difference: "
@@ -264,6 +265,15 @@ def waterCycle():
 			motorOn = True
 			arduino.write('3')
 			time.sleep(0.1)
+	elif time.time() - refTimeWat > 200 and motorOn == True:
+		arduino.write('10')
+		temp_str = ReadArduino(temp_str)
+        	if temp_str is not None:
+            		temp_str = int(temp_str)
+		if temp_str == 1:
+			atasco.save_value({'value':0})	
+		else:
+			atasco.save_value({'value':1})	
 def checkPh():
 	global api, refTimePh, startTime, phCounter
 	
@@ -371,14 +381,14 @@ def addData():
 #sleep for desired amount of time
 if __name__ == "__main__":
         while True:
-
+		backupTimes()
 		if tf[variabs['firstTime']] == True:
 			firstTime()
+		
 		checkLevels()
 		checkPh()
 		waterCycle()
 		lightCycle()
-		backupTimes()
 		addData()
 		now = datetime.datetime.now()
 		if now.hour == 6 and now.minute > 50:
