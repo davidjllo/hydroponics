@@ -1,5 +1,6 @@
 import httplib, urllib
 import time
+import datetime
 import serial
 import sys
 import commands
@@ -285,6 +286,7 @@ def lightCycle():
 	global lightsOff, mark1, mark2, temp_str, ledHrs, sunHrs
 	hours = 0
 	attempts = 0
+	now = datetime.datetime.now()
 	while attempts < 5:
 	    try:
 		print "getting hours"
@@ -310,7 +312,7 @@ def lightCycle():
 		refTimeLight = time.time()
 		variabs['lightsOn'] = 1
 		lightsOn = True 
-	if time.time() - refTimeLight > lightHoursInSecs and lightsOn == True:
+	if (time.time() - refTimeLight > lightHoursInSecs and lightsOn == True) or now.hour == 24:
 		print "lights turned off"
 		#tell arduino to turn light off
 		arduino.write('2')
@@ -369,8 +371,7 @@ def addData():
 #sleep for desired amount of time
 if __name__ == "__main__":
         while True:
-        print "time: "
-        print time.hour();
+
 		if tf[variabs['firstTime']] == True:
 			firstTime()
 		checkLevels()
@@ -379,4 +380,7 @@ if __name__ == "__main__":
 		lightCycle()
 		backupTimes()
 		addData()
+		now = datetime.datetime.now()
+		if now.hour == 6 and now.minute > 50:
+			exit(0)
                 time.sleep(sleep)
