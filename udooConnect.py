@@ -270,7 +270,7 @@ def checkPh():
 		#Tell arduino to check ph
 		#arduino.write('5')
 		refTimePh = time.time()
-	//durante la primera ejecución
+	//durante la primera ejecucion
 	if time.time() - refTimePh > 600 * phCounter and phCounter < 5:
 		print "Checking pH"
 		#Tell arduino to check ph
