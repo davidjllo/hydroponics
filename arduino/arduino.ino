@@ -18,6 +18,10 @@
 #define aguaSensor 5
 
 boolean ilum = false;
+unsigned long int ledTime = 0;
+unsigned long int initMark = 0;
+unsigned long int endMark = 0;
+
 int ledSum = 0;
 unsigned long int avgValue;  //Store the average value of the sensor feedback
 float b;
@@ -143,6 +147,13 @@ void loop() {
           controlPh();
           break;
         }
+        case 9:
+        {
+          //Envia horas de led en un día. (se llama apenas finaliza 
+          //tiempo de luz)
+          Serial.println(ledTime);
+          ledTime = 0;
+        }
       }
     }
   
@@ -195,11 +206,20 @@ void controlPh(){
 void checkLight(){
   //si el sensor tiene la minima cantidad de luz, 
   //SI1145.ReadVisible() < 280 && 
-  if(ilum == true){
+  int light = SI1145.ReadIR();
+  if(ilum == true && light < 340){
     digitalWrite(ilumPin, HIGH);
-  }else{
+    initMark = time.millis();
+  }else if(ilum == true && light > 340){
     digitalWrite(ilumPin, LOW);
+    endMark = time.millis();
+    if(initMark != 0){
+      ledTime += (endMark - initMark);
+      endMark = 0;
+      initMark = 0;
+    }
   }
+
 }
 
 void blinks(){

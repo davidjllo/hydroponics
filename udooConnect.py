@@ -318,6 +318,15 @@ def lightCycle():
 		variabs['lightsOn'] = 0
 		lightsOff = True
 		variabs['lightsOff'] = 1
+		time.sleep(0.2)
+		arduino.write('9')
+		temp_str = ReadArduino(temp_str)
+        if temp_str is not None:
+            ledHours = int(temp_str)
+            sunHours = hours - ledHours
+            ledHrs.save_value({'value':ledHours})
+            sunHrs.save_value({'value':sunHours})
+            #crear variable
 	if time.time() - refTimeLight > darkHoursInSecs and lightsOn == False and lightsOff == True:
 		#permite que el primer if se active luego de completar tiempo de descanso
 		mark1 = time.time()
@@ -349,6 +358,11 @@ def firstTime():
 	pickle.dump( variabs, open( "save.p", "wb" ) )
 	time.sleep(55)
 
+def addData():
+	#add shit to ubidots
+	for x in range (0,5):
+		ledHrs.save_value({'value':9+x})
+        sunHrs.save_value({'value':9-x})
 #sleep for desired amount of time
 if __name__ == "__main__":
         while True:
@@ -360,4 +374,5 @@ if __name__ == "__main__":
 		waterCycle()
 		lightCycle()
 		backupTimes()
+		addData()
                 time.sleep(sleep)
