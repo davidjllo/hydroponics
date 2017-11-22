@@ -35,7 +35,7 @@ refTimeLight = 0
 phCounter = 1
 tf = [False, True]
 variabs = {"firstTime": 1, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0, 
-"lightsOn": 0, "lightsOff": 0, "motorOn": 0}
+"lightsOn": 0, "lightsOff": 0, "motorOn": 0, "phCounter":0}
 success = False
 
 
@@ -366,11 +366,11 @@ def backupTimes():
 def firstTime():
 	global variabs
 	#llama funciones de primera vez (inyectar macro y micro)
-	#arduino.write('5')
+	arduino.write('5')
 	print "Aplicando macro y micro nutrientes por primera vez"
 	variabs['firstTime'] = 0
 	pickle.dump( variabs, open( "save.p", "wb" ) )
-	#time.sleep(55)
+	time.sleep(55)
 
 def addData():
 	#add shit to ubidots
