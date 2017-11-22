@@ -270,7 +270,7 @@ def checkPh():
 		#Tell arduino to check ph
 		#arduino.write('5')
 		refTimePh = time.time()
-	//durante la primera ejecucion
+	#durante la primera ejecucion
 	if time.time() - refTimePh > 600 * phCounter and phCounter < 5:
 		print "Checking pH"
 		#Tell arduino to check ph
@@ -352,11 +352,11 @@ def backupTimes():
 def firstTime():
 	global variabs
 	#llama funciones de primera vez (inyectar macro y micro)
-	arduino.write('5')
+	#arduino.write('5')
 	print "Aplicando macro y micro nutrientes por primera vez"
 	variabs['firstTime'] = 0
 	pickle.dump( variabs, open( "save.p", "wb" ) )
-	time.sleep(55)
+	#time.sleep(55)
 
 def addData():
 	#add shit to ubidots
