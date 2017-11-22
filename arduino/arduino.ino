@@ -16,17 +16,17 @@
 #define macroSensor 3
 #define microSensor 4
 #define aguaSensor 5
-
+#define flowSensor 6
 boolean ilum = false;
 unsigned long int ledTime = 0;
 unsigned long int initMark = 0;
 unsigned long int endMark = 0;
-
+boolean flow = false;
 int ledSum = 0;
 unsigned long int avgValue;  //Store the average value of the sensor feedback
 float b;
 int buf[10],temp;
-//SI114X SI1145 = SI114X();
+SI114X SI1145 = SI114X();
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -37,16 +37,16 @@ void setup() {
   pinMode(dosifAcido, OUTPUT);
   pinMode(dosifMacro, OUTPUT);
   pinMode(dosifMicro, OUTPUT);
-//  while (!SI1145.Begin()){
-//    Serial.println("Not ready");
-//    delay(1000);
-//  }
+  while (!SI1145.Begin()){
+    Serial.println("Not ready");
+    delay(1000);
+  }
 }
 
 void loop() {
   //Espera a recibir un dato(horas de luz), luego envia datos
   //faltantes y vuelve a la espera.
-   
+    checkFlow();
     checkLight();                                                             
     if(Serial.available() > 0){
       blinks();
@@ -154,9 +154,20 @@ void loop() {
           Serial.println(ledTime);
           ledTime = 0;
         }
+        case 10:
+        {
+          //check flow
+          Serial.println(flow);
+          flow = false;
+        }
       }
     }
   
+}
+void checkFlow(){
+  if (analogRead(flowSensor) > 50){
+    flow = true;
+  }
 }
 void controlPh(){
     for(int i=0;i<10;i++)       //Get 10 sample value from the sensor for smooth the value
@@ -187,7 +198,7 @@ void controlPh(){
   if(phValue>6.5)
   {
     digitalWrite(dosifAcido, HIGH);
-    delay(500);
+    delay(1000);
     digitalWrite(dosifAcido, LOW);
     delay(500);
   }
@@ -196,7 +207,7 @@ void controlPh(){
     if(phValue<5.5)
   {
     digitalWrite(dosifBase, HIGH);
-    delay(500);
+    delay(1000);
     digitalWrite(dosifBase, LOW);
     delay(500);
   
@@ -209,10 +220,10 @@ void checkLight(){
   int light = SI1145.ReadIR();
   if(ilum == true && light < 340){
     digitalWrite(ilumPin, HIGH);
-    initMark = time.millis();
+    initMark = millis();
   }else if(ilum == true && light > 340){
     digitalWrite(ilumPin, LOW);
-    endMark = time.millis();
+    endMark = millis();
     if(initMark != 0){
       ledTime += (endMark - initMark);
       endMark = 0;
