@@ -34,8 +34,7 @@ refTimePh = 0
 refTimeLight = 0
 phCounter = 1
 tf = [False, True]
-variabs = {"firstTime": 1, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0, 
-"lightsOn": 0, "lightsOff": 0, "motorOn": 0, "phCounter": 0}
+variabs = {"firstTime": 1, "refTime": 0, "refTimeWat": 0, "refTimePh": 0, "refTimeLight": 0, "lightsOn": 0, "lightsOff": 0, "motorOn": 0, "phCounter": 0}
 success = False
 
 
@@ -139,7 +138,7 @@ def ReadArduino(arduino_out):
 #check level of tanks
 def checkLevels():
     global baseLevel, api, acidLevel, temp_str
-    global macroLevel, microLevel, waterLevel, ledHrs, sunHrs, ph
+    global macroLevel, microLevel, waterLevel, ledHrs, sunHrs, ph, temp_str
     
     while True:
         #Escribir a arduino para despertarlo y recibir datos
@@ -150,63 +149,63 @@ def checkLevels():
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-	    print "Base level:"
-	    print temp_str	    
+	    	print "Base level:"
+	    	print temp_str	    
 	    attempts = 0
-            while attempts < 5:
-		try:
-		    baseLevel.save_value({'value':temp_str})
-		    attempts = 5
-		except:
-		    print "cant get var"
-		    time.sleep(0.5)
-		    attempts += 1
+        while attempts < 5:
+			try:
+			    baseLevel.save_value({'value':temp_str})
+			    attempts = 5
+			except:
+			    print "cant get var"
+			    time.sleep(0.5)
+			    attempts += 1
 	#nivel Acido
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-	    print "Acid level:"
-	    print temp_str
+		    print "Acid level:"
+		    print temp_str
 	    attempts = 0
-            while attempts < 5:
-		try:
-		    acidLevel.save_value({'value':temp_str})
-		    attempts = 5
-		except:
-		    print "cant get var"
-		    time.sleep(0.5)
-		    attempts += 1     	        
+        while attempts < 5:
+			try:
+			    acidLevel.save_value({'value':temp_str})
+			    attempts = 5
+			except:
+			    print "cant get var"
+			    time.sleep(0.5)
+			    attempts += 1     	        
 	#nivel Macro
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-	    print "Macro Nutrients level:"
-	    print temp_str
+		    print "Macro Nutrients level:"
+		    print temp_str
 	    attempts = 0
-            while attempts < 5:
-		try:
-	    	    macroLevel.save_value({'value':temp_str})
-		    attempts = 5
-		except:
-		    print "cant get var"
-		    time.sleep(0.5)
-		    attempts += 1     	        
+        while attempts < 5:
+			try:
+		    	macroLevel.save_value({'value':temp_str})
+			    attempts = 5
+			except:
+			    print "cant get var"
+			    time.sleep(0.5)
+			    attempts += 1     	        
 	        	        
 	#nivel Micro
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-	    print "Micro Nutrients level:"
-	    print temp_str
+		    print "Micro Nutrients level:"
+		    print temp_str
 	    attempts = 0
-            while attempts < 5:
-		try:
-	    	    microLevel.save_value({'value':temp_str})
-		    attempts = 5
-		except:
-		    print "cant get var"
-		    time.sleep(0.5)
-		    attempts += 1     	        
+        while attempts < 5:
+			try:
+		    	microLevel.save_value({'value':temp_str})
+			    attempts = 5
+			except:
+			    print "cant get var"
+			    time.sleep(0.5)
+			    attempts += 1     	        
 	        	        
 	#nivel Agua
 	temp_str = ReadArduino(temp_str)
@@ -215,14 +214,14 @@ def checkLevels():
 	    print "Water level:"
 	    print temp_str
 	    attempts = 0
-            while attempts < 5:
-		try:
-	    	    waterLevel.save_value({'value':temp_str})
-		    attempts = 5
-		except:
-		    print "cant get var"
-		    time.sleep(0.5)
-		    attempts += 1     	        	        	        	        
+        while attempts < 5:
+			try:
+		        waterLevel.save_value({'value':temp_str})
+			    attempts = 5
+			except:
+			    print "cant get var"
+			    time.sleep(0.5)
+			    attempts += 1     	        	        	        	        
 	break
      
 def lightTest():
@@ -249,7 +248,6 @@ def lightTest():
 def waterCycle():
 	global api, startTime, refTimeWat, motorOn, temp_str
 	#test LED
-	
 	#print "Motor time Difference: "
 		#si lleva 15 min prendido lo apaga
         if time.time() - refTimeWat > 900 and motorOn == True :
@@ -268,12 +266,26 @@ def waterCycle():
 	elif time.time() - refTimeWat > 200 and motorOn == True:
 		arduino.write('10')
 		temp_str = ReadArduino(temp_str)
-        	if temp_str is not None:
-            		temp_str = int(temp_str)
+    	if temp_str is not None:
+        		temp_str = int(temp_str)
 		if temp_str == 1:
-			atasco.save_value({'value':0})	
+			attempts = 0
+			while attempts < 5:
+			    try:
+				atasco.save_value({'value':0})
+				attempts = 5
+			    except:
+				time.sleep(0.5)
+				attempts += 1
 		else:
-			atasco.save_value({'value':1})	
+			attempts = 0
+			while attempts < 5:
+			    try:
+				atasco.save_value({'value':1})
+				attempts = 5
+			    except:
+				time.sleep(0.5)
+
 def checkPh():
 	global api, refTimePh, startTime, phCounter
 	
@@ -295,8 +307,8 @@ def lightCycle():
 	global api, startTime, refTimeLight, lightHours, lightsOn 
 	global lightsOff, mark1, mark2, temp_str, ledHrs, sunHrs
 	hours = 0
-	attempts = 0
 	now = datetime.datetime.now()
+	attempts = 0
 	while attempts < 5:
 	    try:
 		print "getting hours"
@@ -338,8 +350,24 @@ def lightCycle():
         if temp_str is not None:
             ledHours = int(temp_str)
             sunHours = hours - ledHours
-            ledHrs.save_value({'value':ledHours})
-            sunHrs.save_value({'value':sunHours})
+            attempts = 0
+	        while attempts < 5:
+				try:
+			        ledHrs.save_value({'value':ledHours})
+				    attempts = 5
+				except:
+				    print "cant get var"
+				    time.sleep(0.5)
+				    attempts += 1
+			attempts = 0  
+			while attempts < 5:
+				try:
+			        sunHrs.save_value({'value':sunHours})
+				    attempts = 5
+				except:
+				    print "cant get var"
+				    time.sleep(0.5)
+				    attempts += 1  
             #crear variable
 	if time.time() - refTimeLight > darkHoursInSecs and lightsOn == False and lightsOff == True:
 		#permite que el primer if se active luego de completar tiempo de descanso
@@ -354,9 +382,8 @@ def backupTimes():
  	variabs['refTimeWat'] = refTimeWat
 	variabs['refTimePh'] = refTimePh
 	variabs['refTimeLight'] = refTimeLight
-
 	variabs['lightsOn'] = int(lightsOn == True)
-	print "lights : "
+	print "lights: "
 	print int(lightsOn == True)
 	variabs['lightsOff'] = int(lightsOff == True)
 	variabs['motorOn'] = int(motorOn == True)
