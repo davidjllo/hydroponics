@@ -373,6 +373,7 @@ def firstTime():
 	time.sleep(55)
 
 def readPh():
+	global temp_str, pH
 	time.sleep(0.2)
 	arduino.write('11')
 	ph = 0
