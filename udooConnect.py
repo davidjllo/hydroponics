@@ -17,7 +17,7 @@ motorOn = False
 
 #endTestVariabs 
 #Create serial device for reading serial
-arduino = serial.Serial('/dev/ttyACM0',57600,timeout=0)
+arduino = serial.Serial('/dev/ttyACM3',56700,timeout=0)
 arduino.flushOutput()
 arduino.flushInput()
 serial_buffer = ""
@@ -50,9 +50,15 @@ if variabs['firstTime'] == 0:
 	refTimePh = variabs['refTimePh']
 	refTimeLight = variabs['refTimeLight']
 	lightsOn = tf[variabs['lightsOn']]
+	if (lightsOn == True):
+		arduino.write('1')
+		time.sleep(0.5)
 	lightsOff = tf[variabs['lightsOff']]
-	phCounter = tf[variabs['phCounter']]
+	phCounter = variabs['phCounter']
 	motorOn = tf[variabs['motorOn']]
+	if (motorOn == True):
+		arduino.write('3')
+		time.sleep(0.5)	
 	print "backed up variables"
 else:
 	print "variabs"
@@ -142,22 +148,23 @@ def checkLevels():
     
     while True:
         #Escribir a arduino para despertarlo y recibir datos
-	
+	arduino.flush()
         arduino.write('0')
-	time.sleep(0.1)	        	        
+	time.sleep(3)
+	#arduino.flush()	        	        
 	#nivel Base
-	temp_str = ReadArduino(temp_str)
-        if temp_str is not None:
+
+	if temp_str is not None:
             temp_str = int(temp_str)
 	    print "Base level:"
-	    print temp_str	    
+	    print temp_str
 	attempts = 0
         while attempts < 5:
 			try:
-			    baseLevel.save_value({'value':temp_str})
+			    baseLevel.save_value({"value" :  88})
 			    attempts = 5
 			except:
-			    print "cant get var"
+			    print "cant get var1"
 			    time.sleep(0.5)
 			    attempts += 1
 	#nivel Acido
@@ -169,10 +176,10 @@ def checkLevels():
 	attempts = 0
         while attempts < 5:
 			try:
-			    acidLevel.save_value({'value':temp_str})
+			    acidLevel.save_value({"value" : temp_str})
 			    attempts = 5
 			except:
-			    print "cant get var"
+			    print "cant get var2"
 			    time.sleep(0.5)
 			    attempts += 1     	        
 	#nivel Macro
@@ -184,10 +191,10 @@ def checkLevels():
 	attempts = 0
         while attempts < 5:
 			try:
-		    	    macroLevel.save_value({'value':temp_str})
+		    	    macroLevel.save_value({"value":temp_str})
 			    attempts = 5
 			except:
-			    print "cant get var"
+			    print "cant get var3"
 			    time.sleep(0.5)
 			    attempts += 1     	        
 	        	        
@@ -200,10 +207,10 @@ def checkLevels():
 	attempts = 0
         while attempts < 5:
 			try:
-		    	    microLevel.save_value({'value':temp_str})
+		    	    microLevel.save_value({"value":temp_str})
 			    attempts = 5
 			except:
-			    print "cant get var"
+			    print "cant get var4"
 			    time.sleep(0.5)
 			    attempts += 1     	        
 	        	        
@@ -216,12 +223,13 @@ def checkLevels():
 	attempts = 0
         while attempts < 5:
 			try:
-		            waterLevel.save_value({'value':temp_str})
+		            waterLevel.save_value({"value":temp_str})
 			    attempts = 5
 			except:
-			    print "cant get var"
+			    print "cant get var5"
 			    time.sleep(0.5)
-			    attempts += 1     	        	        	        	        
+			    attempts += 1
+	arduino.flush()     	        	        	        	        
 	break
      
 def lightTest():
@@ -393,20 +401,23 @@ def backupTimes():
 def firstTime():
 	global variabs
 	#llama funciones de primera vez (inyectar macro y micro)
-	arduino.write('5')
+	#arduino.write('5')
 	print "Aplicando macro y micro nutrientes por primera vez"
 	variabs['firstTime'] = 0
 	pickle.dump( variabs, open( "save.p", "wb" ) )
-	time.sleep(55)
+	#time.sleep(55)
 
 def readPh():
 	global temp_str, pH
 	time.sleep(0.2)
+	arduino.flush()
 	arduino.write('11')
 	ph = 0
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             ph = int(temp_str)
+	    print "ph: "
+	    print ph
 	attempts = 0
 	while attempts < 5:
 	    try:
@@ -422,13 +433,13 @@ if __name__ == "__main__":
 		backupTimes()
 		if tf[variabs['firstTime']] == True:
 			firstTime()
-		
+		time.sleep(0.5)
 		checkLevels()
 		checkPh()
 		waterCycle()
 		lightCycle()
 		readPh()
-		addData()
+		
 		now = datetime.datetime.now()
 		if now.hour == 6 and now.minute > 50:
 			exit(0)

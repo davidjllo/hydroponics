@@ -65,6 +65,7 @@ void loop() {
           
           //nivel base 309
           baseLevel = map(analogRead(baseSensor),100,320,0,100);
+          baseLevel = 88;
           Serial.println(baseLevel);
           delay(20);
           //nivel acido 131
@@ -91,11 +92,13 @@ void loop() {
         {
         //Encender iluminación
           ilum = true;
+          Serial.flush();
           break;
         }
         case 2:
         {
           ilum = false;
+          Serial.flush();
           break;
         }
         case 3:
@@ -130,6 +133,7 @@ void loop() {
           digitalWrite(dosifMicro, LOW);
           delay(7400);
           digitalWrite(dosifMacro, LOW);
+          Serial.flush();
           break;
         }
         case 7:
@@ -143,6 +147,7 @@ void loop() {
           delay(500);
           digitalWrite(ilumPin, LOW);
           delay(500);
+          Serial.flush();
           break;
         }
         case 8:
@@ -172,6 +177,7 @@ void loop() {
         }
         case 11:
         {
+          Serial.flush();
           //leer ph
           for(int i=0;i<10;i++)       //Get 10 sample value from the sensor for smooth the value
   { 
