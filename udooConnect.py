@@ -17,7 +17,7 @@ motorOn = False
 
 #endTestVariabs 
 #Create serial device for reading serial
-arduino = serial.Serial('/dev/ttyACM3',56700,timeout=0)
+arduino = serial.Serial('/dev/ttyACM0',9600,timeout=0)
 arduino.flushOutput()
 arduino.flushInput()
 serial_buffer = ""
@@ -82,6 +82,8 @@ while success == False:
 	    baseLevel = api.get_variable("59e81422c03f97163455e153")
 	    acidLevel = api.get_variable("59e8142dc03f9715f9352616")
 	    #time.sleep(0.5)
+	    stop = api.get_variable("5a15dc2ac03f9735ac379da1")
+	    restart = api.get_variable("5a1872b9c03f970e4688a315")
 	    macroLevel = api.get_variable("59e8140bc03f9715f9352615")
 	    microLevel = api.get_variable("59e81418c03f9716b74ccf31")
 	    waterLevel = api.get_variable("59e81401c03f97163455e149")
@@ -93,8 +95,9 @@ while success == False:
 	    print "time spent: "
 	    print timeTest1 - timeTest
 	    #show initiated
+	   
 	    arduino.write('7')
-	    time.sleep(2)
+	    time.sleep(3)
 	    success = True
 	
 	except:
@@ -153,11 +156,15 @@ def checkLevels():
 	time.sleep(3)
 	#arduino.flush()	        	        
 	#nivel Base
-
-	if temp_str is not None:
-            temp_str = int(temp_str)
-	    print "Base level:"
-	    print temp_str
+	lock = True
+	while lock == True:
+		temp_str = ReadArduino(temp_str)
+		print temp_str
+		if temp_str is not None:
+		    temp_str = int(temp_str)
+		    print "Base level:"
+		    print temp_str
+		    lock = False
 	attempts = 0
         while attempts < 5:
 			try:
@@ -251,7 +258,7 @@ def lightTest():
 			refTime = time.time()
 			lightsOn = True
 			arduino.write('1')
-			time.sleep(0.1)
+			time.sleep(3)
 
 def waterCycle():
 	global api, startTime, refTimeWat, motorOn, temp_str
@@ -412,12 +419,16 @@ def readPh():
 	time.sleep(0.2)
 	arduino.flush()
 	arduino.write('11')
+	time.sleep(3)
 	ph = 0
-	temp_str = ReadArduino(temp_str)
-        if temp_str is not None:
-            ph = int(temp_str)
-	    print "ph: "
-	    print ph
+	lock = True
+	while lock == True:
+		temp_str = ReadArduino(temp_str)
+		if temp_str is not None:
+		    ph = float(temp_str)
+		    print "ph: "
+		    print ph
+		    lock = False
 	attempts = 0
 	while attempts < 5:
 	    try:
@@ -427,7 +438,14 @@ def readPh():
 		print "cant get var"
 		time.sleep(0.5)
 		attempts += 1
-#sleep for desired amount of time
+
+def checkButtons():
+	global api, stop, restart
+	if  int(stop.get_values(1)[0]['value']) == 1:
+		exit(0);
+	if  int(restart.get_values(1)[0]['value']) == 1:
+		subprocess.Popen("sudo rm /home/pi/Desktop/hydroponics/save.p")
+		subprocess.Popen("sudo reboot")
 if __name__ == "__main__":
         while True:
 		backupTimes()
@@ -439,7 +457,7 @@ if __name__ == "__main__":
 		waterCycle()
 		lightCycle()
 		readPh()
-		
+		checkButtons()
 		now = datetime.datetime.now()
 		if now.hour == 6 and now.minute > 50:
 			exit(0)
