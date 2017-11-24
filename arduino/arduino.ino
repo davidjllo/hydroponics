@@ -3,14 +3,14 @@
 #include "SI114X.h"
 //Digital
 #define ilumPin 22
-#define pinMotor 25
+#define pinMotor 23
 #define dosifBase 29
 #define dosifAcido 30
 #define dosifMacro 33
 #define dosifMicro 34
 #define led 53
 //Analog
-#define sensorPh 0
+#define sensorPh 7
 #define baseSensor 1
 #define acidoSensor 2
 #define macroSensor 3
@@ -29,7 +29,7 @@ int buf[10],temp;
 SI114X SI1145 = SI114X();
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(9600);
   pinMode(led, OUTPUT);
   pinMode(ilumPin, OUTPUT);
   pinMode(pinMotor, OUTPUT);
@@ -46,10 +46,13 @@ void setup() {
 void loop() {
   //Espera a recibir un dato(horas de luz), luego envia datos
   //faltantes y vuelve a la espera.
-    checkFlow();
-    checkLight();                                                             
+    //checkFlow();
+    //checkLight(); 
+    //delay(500);
+//Serial.println("entered serial");    
     if(Serial.available() > 0){
       blinks();
+      
       int option = Serial.parseInt();
       switch(option){
         case 0:
@@ -60,26 +63,27 @@ void loop() {
           int microLevel = 85;
           int waterLevel = 85;
           
-          //nivel base
-          baseLevel = map(analogRead(baseSensor),599,612,0,100);
+          //nivel base 309
+          baseLevel = map(analogRead(baseSensor),100,320,0,100);
           Serial.println(baseLevel);
           delay(20);
-          //nivel acido
-          acidLevel = map(analogRead(acidoSensor),499,612,0,100);
+          //nivel acido 131
+          acidLevel = map(analogRead(acidoSensor),0,170,0,100);
           Serial.println(acidLevel);
           delay(20);
           //nivel macro
           macroLevel = map(analogRead(macroSensor),499,612,0,100);
+          macroLevel = 85;
           Serial.println(macroLevel);
           delay(20);
           //nivel micro
-          microLevel = map(analogRead(microSensor),499,612,0,100);
+          microLevel = map(analogRead(microSensor),500,900,0,100);
           Serial.println(microLevel);
           delay(20);
           //nivel agua
-          waterLevel = map(analogRead(microSensor),499,612,0,100);
+          waterLevel = map(analogRead(aguaSensor),499,800,0,100);
           Serial.println(waterLevel);
-          //delay(2500);
+          //delay(2500); 736
           //Serial.flush();
           break;
         }
@@ -169,8 +173,36 @@ void loop() {
         case 11:
         {
           //leer ph
-          Serial.println(analogRead(sensorPh));
+          for(int i=0;i<10;i++)       //Get 10 sample value from the sensor for smooth the value
+  { 
+    buf[i]=analogRead(sensorPh);
+    delay(10);
+  }
+  for(int i=0;i<9;i++)        //sort the analog from small to large
+  {
+    for(int j=i+1;j<10;j++)
+    {
+      if(buf[i]>buf[j])
+      {
+        temp=buf[i];
+        buf[i]=buf[j];
+        buf[j]=temp;
+      }
+    }
+  }
+  avgValue=0;
+  for(int i=2;i<8;i++)                      //take the average value of 6 center sample
+    avgValue+=buf[i];
+  float phValue=(float)avgValue*5.0/1024/6; //convert the analog into millivolt
+  phValue=3.5*phValue;
+          Serial.println(phValue);
           break;
+        }
+        case 12:
+        {
+         int light = SI1145.ReadIR();
+         Serial.println(light);
+         break; 
         }
       }
     }

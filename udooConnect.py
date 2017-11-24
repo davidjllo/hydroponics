@@ -17,7 +17,7 @@ motorOn = False
 
 #endTestVariabs 
 #Create serial device for reading serial
-arduino = serial.Serial('/dev/ttymxc3',115200,timeout=0)
+arduino = serial.Serial('/dev/ttyACM0',57600,timeout=0)
 arduino.flushOutput()
 arduino.flushInput()
 serial_buffer = ""
@@ -149,9 +149,9 @@ def checkLevels():
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-	    	print "Base level:"
-	    	print temp_str	    
-	    attempts = 0
+	    print "Base level:"
+	    print temp_str	    
+	attempts = 0
         while attempts < 5:
 			try:
 			    baseLevel.save_value({'value':temp_str})
@@ -164,9 +164,9 @@ def checkLevels():
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-		    print "Acid level:"
-		    print temp_str
-	    attempts = 0
+	    print "Acid level:"
+	    print temp_str
+	attempts = 0
         while attempts < 5:
 			try:
 			    acidLevel.save_value({'value':temp_str})
@@ -179,12 +179,12 @@ def checkLevels():
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-		    print "Macro Nutrients level:"
-		    print temp_str
-	    attempts = 0
+	    print "Macro Nutrients level:"
+	    print temp_str
+	attempts = 0
         while attempts < 5:
 			try:
-		    	macroLevel.save_value({'value':temp_str})
+		    	    macroLevel.save_value({'value':temp_str})
 			    attempts = 5
 			except:
 			    print "cant get var"
@@ -195,12 +195,12 @@ def checkLevels():
 	temp_str = ReadArduino(temp_str)
         if temp_str is not None:
             temp_str = int(temp_str)
-		    print "Micro Nutrients level:"
-		    print temp_str
-	    attempts = 0
+	    print "Micro Nutrients level:"
+	    print temp_str
+	attempts = 0
         while attempts < 5:
 			try:
-		    	microLevel.save_value({'value':temp_str})
+		    	    microLevel.save_value({'value':temp_str})
 			    attempts = 5
 			except:
 			    print "cant get var"
@@ -213,10 +213,10 @@ def checkLevels():
             temp_str = int(temp_str)
 	    print "Water level:"
 	    print temp_str
-	    attempts = 0
+	attempts = 0
         while attempts < 5:
 			try:
-		        waterLevel.save_value({'value':temp_str})
+		            waterLevel.save_value({'value':temp_str})
 			    attempts = 5
 			except:
 			    print "cant get var"
@@ -267,7 +267,7 @@ def waterCycle():
 		arduino.write('10')
 		temp_str = ReadArduino(temp_str)
     	if temp_str is not None:
-        		temp_str = int(temp_str)
+        	temp_str = int(temp_str)
 		if temp_str == 1:
 			attempts = 0
 			while attempts < 5:
@@ -350,24 +350,24 @@ def lightCycle():
         if temp_str is not None:
             ledHours = int(temp_str)
             sunHours = hours - ledHours
-            attempts = 0
-	        while attempts < 5:
-				try:
-			        ledHrs.save_value({'value':ledHours})
-				    attempts = 5
-				except:
-				    print "cant get var"
-				    time.sleep(0.5)
-				    attempts += 1
-			attempts = 0  
-			while attempts < 5:
-				try:
-			        sunHrs.save_value({'value':sunHours})
-				    attempts = 5
-				except:
-				    print "cant get var"
-				    time.sleep(0.5)
-				    attempts += 1  
+        attempts = 0
+        while attempts < 5:
+		try:
+	            ledHrs.save_value({'value':ledHours})
+		    attempts = 5
+		except:
+		    print "cant get var"
+		    time.sleep(0.5)
+		    attempts += 1
+	attempts = 0  
+	while attempts < 5:
+		try:
+	            sunHrs.save_value({'value':sunHours})
+		    attempts = 5
+		except:
+		    print "cant get var"
+		    time.sleep(0.5)
+		    attempts += 1  
             #crear variable
 	if time.time() - refTimeLight > darkHoursInSecs and lightsOn == False and lightsOff == True:
 		#permite que el primer if se active luego de completar tiempo de descanso
